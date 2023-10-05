@@ -23,13 +23,13 @@ pipeline {
                     }
 
                     // Fetch current version from the VERSION file.
-                    def currentVersion = readFile('VERSION').trim()
+                    def currentVersion = readFile('Version').trim()
                     
                     // Bump version using semver-tool.
                     def newVersion = sh(script: "semver-tool bump ${bumpType} ${currentVersion}", returnStdout: true).trim()
 
                     // Update the VERSION file and commit it.
-                    writeFile(file: 'VERSION', text: newVersion)
+                    writeFile(file: 'Version', text: newVersion)
                     sh """
                        git config user.name "Sai"
                        git config user.email "sairamakrishna.srk96@gmail.com"
