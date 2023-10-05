@@ -1,45 +1,52 @@
 pipeline {
     agent any
 
+    parameters {
+        choice(name: 'BUMP_TYPE', choices: ['major', 'minor', 'patch'], description: 'Which version bump do you want to perform?')
+    }
+
     stages {
-        stage('Checkout') {
+        stage('Major') {
+            when {
+                expression { params.BUMP_TYPE == 'major' }
+            }
             steps {
-                checkout scm
+                script {
+                    def currentVersion = readFile('VERSION').trim()
+                    def newVersion = sh(script: "semver-tool bump major ${currentVersion}", returnStdout: true).trim()
+                    writeFile(file: 'VERSION', text: newVersion)
+                    echo "Bumped major version to ${newVersion}"
+                }
+            }
+        }
+        
+        stage('Minor') {
+            when {
+                expression { params.BUMP_TYPE == 'minor' }
+            }
+            steps {
+                script {
+                    def currentVersion = readFile('VERSION').trim()
+                    def newVersion = sh(script: "semver-tool bump minor ${currentVersion}", returnStdout: true).trim()
+                    writeFile(file: 'VERSION', text: newVersion)
+                    echo "Bumped minor version to ${newVersion}"
+                }
             }
         }
 
-        stage('Determine Version Bump') {
+        stage('Patch') {
+            when {
+                expression { params.BUMP_TYPE == 'patch' }
+            }
             steps {
                 script {
-                    def commitMessage = sh(script: "git log -1 --pretty=%B", returnStdout: true).trim()
-
-                    // Default to patch version bump.
-                    def bumpType = 'patch'
-
-                    if (commitMessage.contains('[MAJOR]')) {
-                        bumpType = 'major'
-                    } else if (commitMessage.contains('[MINOR]')) {
-                        bumpType = 'minor'
-                    }
-
-                    // Fetch current version from the VERSION file.
-                    def currentVersion = readFile('Version').trim()
-                    
-                    // Bump version using semver-tool.
-                    def newVersion = sh(script: "semver-tool bump ${bumpType} ${currentVersion}", returnStdout: true).trim()
-
-                    // Update the VERSION file and commit it.
-                    writeFile(file: 'Version', text: newVersion)
-                    sh """
-                       git config user.name "Sai"
-                       git config user.email "sairamakrishna.srk96@gmail.com"
-                       git add VERSION
-                       git commit -m 'Bump version to ${newVersion}'
-                       git tag v${newVersion}
-                       git push origin v${newVersion}
-                    """
+                    def currentVersion = readFile('VERSION').trim()
+                    def newVersion = sh(script: "semver-tool bump patch ${currentVersion}", returnStdout: true).trim()
+                    writeFile(file: 'VERSION', text: newVersion)
+                    echo "Bumped patch version to ${newVersion}"
                 }
             }
         }
     }
 }
+
