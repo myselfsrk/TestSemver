@@ -20,6 +20,11 @@ pipeline {
                     env.NEW_VERSION = "${major}.0.0"
                     writeFile(file: 'Version', text: env.NEW_VERSION)
                     echo "Bumped patch version to ${env.NEW_VERSION}"
+                    sh 'git config user.name "myselfsrk"'
+                    sh 'git config user.email "sairamakrishna.srk96@gmail.com"'
+                    sh 'git add Version'
+                    sh 'git commit -m "Bumped version to ${env.NEW_VERSION}"'
+                    sh 'git push'
                 }
             }
         }
@@ -37,6 +42,11 @@ pipeline {
                     env.NEW_VERSION = "${major}.${minor}.0"
                     writeFile(file: 'Version', text: env.NEW_VERSION)
                     echo "Bumped patch version to ${env.NEW_VERSION}"
+                    sh 'git config user.name "myselfsrk"'
+                    sh 'git config user.email "sairamakrishna.srk96@gmail.com"'
+                    sh 'git add Version'
+                    sh 'git commit -m "Bumped version to ${env.NEW_VERSION}"'
+                    sh 'git push'
                 }
             }
         }
@@ -55,6 +65,11 @@ pipeline {
                     env.NEW_VERSION = "${major}.${minor}.${patch}"
                     writeFile(file: 'Version', text: env.NEW_VERSION)
                     echo "Bumped patch version to ${env.NEW_VERSION}"
+                    sh 'git config user.name "myselfsrk"'
+                    sh 'git config user.email "sairamakrishna.srk96@gmail.com"'
+                    sh 'git add Version'
+                    sh 'git commit -m "Bumped version to ${env.NEW_VERSION}"'
+                    sh 'git push'
                 }
             }
         }
