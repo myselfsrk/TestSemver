@@ -13,13 +13,15 @@ pipeline {
             steps {
                 script {
                     def currentVersion = readFile('Version').trim()
-                    def newVersion = sh(script: "semver-tool bump major ${currentVersion}", returnStdout: true).trim()
+                    def major = sh(script: "echo ${currentVersion} | cut -d. -f1", returnStdout: true).trim()
+                    major = "${major.toInteger() + 1}"
+                    def newVersion = "${major}.0.0"
                     writeFile(file: 'Version', text: newVersion)
                     echo "Bumped major version to ${newVersion}"
                 }
             }
         }
-        
+
         stage('Minor') {
             when {
                 expression { params.BUMP_TYPE == 'minor' }
@@ -27,7 +29,10 @@ pipeline {
             steps {
                 script {
                     def currentVersion = readFile('Version').trim()
-                    def newVersion = sh(script: "semver-tool bump minor ${currentVersion}", returnStdout: true).trim()
+                    def major = sh(script: "echo ${currentVersion} | cut -d. -f1", returnStdout: true).trim()
+                    def minor = sh(script: "echo ${currentVersion} | cut -d. -f2", returnStdout: true).trim()
+                    minor = "${minor.toInteger() + 1}"
+                    def newVersion = "${major}.${minor}.0"
                     writeFile(file: 'Version', text: newVersion)
                     echo "Bumped minor version to ${newVersion}"
                 }
@@ -41,7 +46,11 @@ pipeline {
             steps {
                 script {
                     def currentVersion = readFile('Version').trim()
-                    def newVersion = sh(script: "semver-tool bump patch ${currentVersion}", returnStdout: true).trim()
+                    def major = sh(script: "echo ${currentVersion} | cut -d. -f1", returnStdout: true).trim()
+                    def minor = sh(script: "echo ${currentVersion} | cut -d. -f2", returnStdout: true).trim()
+                    def patch = sh(script: "echo ${currentVersion} | cut -d. -f3", returnStdout: true).trim()
+                    patch = "${patch.toInteger() + 1}"
+                    def newVersion = "${major}.${minor}.${patch}"
                     writeFile(file: 'Version', text: newVersion)
                     echo "Bumped patch version to ${newVersion}"
                 }
@@ -49,4 +58,3 @@ pipeline {
         }
     }
 }
-
