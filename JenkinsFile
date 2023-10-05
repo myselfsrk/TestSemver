@@ -4,7 +4,9 @@ pipeline {
     parameters {
         choice(name: 'BUMP_TYPE', choices: ['patch', 'major', 'minor'], description: 'Which version bump do you want to perform?')
     }
-
+    environment {
+        NEW_VERSION = ''
+    }
     stages {
         stage('Major') {
             when {
@@ -15,9 +17,9 @@ pipeline {
                     def currentVersion = readFile('Version').trim()
                     def major = sh(script: "echo ${currentVersion} | cut -d. -f1", returnStdout: true).trim()
                     major = "${major.toInteger() + 1}"
-                    def newVersion = "${major}.0.0"
-                    writeFile(file: 'Version', text: newVersion)
-                    echo "Bumped major version to ${newVersion}"
+                    env.NEW_VERSION = "${major}.0.0"
+                    writeFile(file: 'Version', text: env.NEW_VERSION)
+                    echo "Bumped patch version to ${env.NEW_VERSION}"
                 }
             }
         }
@@ -32,9 +34,9 @@ pipeline {
                     def major = sh(script: "echo ${currentVersion} | cut -d. -f1", returnStdout: true).trim()
                     def minor = sh(script: "echo ${currentVersion} | cut -d. -f2", returnStdout: true).trim()
                     minor = "${minor.toInteger() + 1}"
-                    def newVersion = "${major}.${minor}.0"
-                    writeFile(file: 'Version', text: newVersion)
-                    echo "Bumped minor version to ${newVersion}"
+                    env.NEW_VERSION = "${major}.${minor}.0"
+                    writeFile(file: 'Version', text: env.NEW_VERSION)
+                    echo "Bumped patch version to ${env.NEW_VERSION}"
                 }
             }
         }
@@ -50,9 +52,9 @@ pipeline {
                     def minor = sh(script: "echo ${currentVersion} | cut -d. -f2", returnStdout: true).trim()
                     def patch = sh(script: "echo ${currentVersion} | cut -d. -f3", returnStdout: true).trim()
                     patch = "${patch.toInteger() + 1}"
-                    def newVersion = "${major}.${minor}.${patch}"
-                    writeFile(file: 'Version', text: newVersion)
-                    echo "Bumped patch version to ${newVersion}"
+                    env.NEW_VERSION = "${major}.${minor}.${patch}"
+                    writeFile(file: 'Version', text: env.NEW_VERSION)
+                    echo "Bumped patch version to ${env.NEW_VERSION}"
                 }
             }
         }
