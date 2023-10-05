@@ -61,6 +61,7 @@ pipeline {
 
                     // Save to script variable
                     currentBuild.newVersion = newVersion
+                    echo "${currentBuild.newVersion}"
                 }
             }
         }
