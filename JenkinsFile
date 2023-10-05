@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     parameters {
-        choice(name: 'BUMP_TYPE', choices: ['major', 'minor', 'patch'], description: 'Which version bump do you want to perform?')
+        choice(name: 'BUMP_TYPE', choices: ['major', 'minor', 'patch'], description: 'Which version bump do you want to perform?', defaultValue: 'patch')
     }
 
     stages {
@@ -41,7 +41,8 @@ pipeline {
 
         stage('Patch') {
             when {
-                expression { params.BUMP_TYPE == 'patch' }
+                // Will execute when the BUMP_TYPE is 'patch' or is not set (default)
+                expression { params.BUMP_TYPE == 'patch' || params.BUMP_TYPE == null }
             }
             steps {
                 script {
