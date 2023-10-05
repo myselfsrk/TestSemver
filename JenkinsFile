@@ -1,0 +1,51 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Determine Version Bump') {
+            steps {
+                script {
+                    def commitMessage = sh(script: "git log -1 --pretty=%B", returnStdout: true).trim()
+
+                    // Default to patch version bump.
+                    def bumpType = 'patch'
+
+                    if (commitMessage.contains('[MAJOR]')) {
+                        bumpType = 'major'
+                    } else if (commitMessage.contains('[MINOR]')) {
+                        bumpType = 'minor'
+                    }
+
+                    // Fetch current version from the VERSION file.
+                    def currentVersion = readFile('VERSION').trim()
+                    
+                    // Bump version using semver-tool.
+                    def newVersion = sh(script: "semver-tool bump ${bumpType} ${currentVersion}", returnStdout: true).trim()
+
+                    // Update the VERSION file and commit it.
+                    writeFile(file: 'VERSION', text: newVersion)
+                    sh """
+                       git config user.name "Sai"
+                       git config user.email "sairamakrishna.srk96@gmail.com"
+                       git add VERSION
+                       git commit -m 'Bump version to ${newVersion}'
+                       git tag v${newVersion}
+                       git push origin v${newVersion}
+                    """
+                }
+            }
+        }
+
+        stage('Build & Deploy') {
+            steps {
+                // Your build and deploy steps.
+            }
+        }
+    }
+}
