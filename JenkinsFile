@@ -4,9 +4,6 @@ pipeline {
     parameters {
         choice(name: 'BUMP_TYPE', choices: ['patch', 'major', 'minor'], description: 'Which version bump do you want to perform?')
     }
-    environment {
-        NEW_VERSION = ''
-    }
     stages {
         stage('Major') {
             when {
@@ -17,14 +14,12 @@ pipeline {
                     def currentVersion = readFile('Version').trim()
                     def major = sh(script: "echo ${currentVersion} | cut -d. -f1", returnStdout: true).trim()
                     major = "${major.toInteger() + 1}"
-                    env.NEW_VERSION = "${major}.0.0"
-                    writeFile(file: 'Version', text: env.NEW_VERSION)
-                    echo "Bumped patch version to ${env.NEW_VERSION}"
-                    sh 'git config user.name "myselfsrk"'
-                    sh 'git config user.email "sairamakrishna.srk96@gmail.com"'
-                    sh 'git add Version'
-                    sh 'git commit -m "Bumped version to ${env.NEW_VERSION}"'
-                    sh 'git push'
+                    def newVersion = "${major}.0.0"
+                    writeFile(file: 'Version', text: newVersion)
+                    echo "Bumped patch version to ${newVersion}"
+
+                    // Save to script variable
+                    currentBuild.newVersion = newVersion
                 }
             }
         }
@@ -39,14 +34,12 @@ pipeline {
                     def major = sh(script: "echo ${currentVersion} | cut -d. -f1", returnStdout: true).trim()
                     def minor = sh(script: "echo ${currentVersion} | cut -d. -f2", returnStdout: true).trim()
                     minor = "${minor.toInteger() + 1}"
-                    env.NEW_VERSION = "${major}.${minor}.0"
-                    writeFile(file: 'Version', text: env.NEW_VERSION)
-                    echo "Bumped patch version to ${env.NEW_VERSION}"
-                    sh 'git config user.name "myselfsrk"'
-                    sh 'git config user.email "sairamakrishna.srk96@gmail.com"'
-                    sh 'git add Version'
-                    sh 'git commit -m "Bumped version to ${env.NEW_VERSION}"'
-                    sh 'git push'
+                    def newVersion = "${major}.${minor}.0"
+                    writeFile(file: 'Version', text: newVersion)
+                    echo "Bumped patch version to ${newVersion}"
+
+                    // Save to script variable
+                    currentBuild.newVersion = newVersion
                 }
             }
         }
@@ -62,13 +55,22 @@ pipeline {
                     def minor = sh(script: "echo ${currentVersion} | cut -d. -f2", returnStdout: true).trim()
                     def patch = sh(script: "echo ${currentVersion} | cut -d. -f3", returnStdout: true).trim()
                     patch = "${patch.toInteger() + 1}"
-                    env.NEW_VERSION = "${major}.${minor}.${patch}"
-                    writeFile(file: 'Version', text: env.NEW_VERSION)
-                    echo "Bumped patch version to ${env.NEW_VERSION}"
+                    def newVersion = "${major}.${minor}.${patch}"
+                    writeFile(file: 'Version', text: newVersion)
+                    echo "Bumped patch version to ${newVersion}"
+
+                    // Save to script variable
+                    currentBuild.newVersion = newVersion
+                }
+            }
+        }
+        stage('Commit and Push to Git') {
+            steps {
+                script {
                     sh 'git config user.name "myselfsrk"'
                     sh 'git config user.email "sairamakrishna.srk96@gmail.com"'
                     sh 'git add Version'
-                    sh 'git commit -m "Bumped version to ${env.NEW_VERSION}"'
+                    sh "git commit -m \"Bumped version to ${currentBuild.newVersion}\""
                     sh 'git push'
                 }
             }
