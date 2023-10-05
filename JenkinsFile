@@ -12,9 +12,9 @@ pipeline {
             }
             steps {
                 script {
-                    def currentVersion = readFile('VERSION').trim()
+                    def currentVersion = readFile('Version').trim()
                     def newVersion = sh(script: "semver-tool bump major ${currentVersion}", returnStdout: true).trim()
-                    writeFile(file: 'VERSION', text: newVersion)
+                    writeFile(file: 'Version', text: newVersion)
                     echo "Bumped major version to ${newVersion}"
                 }
             }
@@ -26,9 +26,9 @@ pipeline {
             }
             steps {
                 script {
-                    def currentVersion = readFile('VERSION').trim()
+                    def currentVersion = readFile('Version').trim()
                     def newVersion = sh(script: "semver-tool bump minor ${currentVersion}", returnStdout: true).trim()
-                    writeFile(file: 'VERSION', text: newVersion)
+                    writeFile(file: 'Version', text: newVersion)
                     echo "Bumped minor version to ${newVersion}"
                 }
             }
@@ -40,9 +40,9 @@ pipeline {
             }
             steps {
                 script {
-                    def currentVersion = readFile('VERSION').trim()
+                    def currentVersion = readFile('Version').trim()
                     def newVersion = sh(script: "semver-tool bump patch ${currentVersion}", returnStdout: true).trim()
-                    writeFile(file: 'VERSION', text: newVersion)
+                    writeFile(file: 'Version', text: newVersion)
                     echo "Bumped patch version to ${newVersion}"
                 }
             }
