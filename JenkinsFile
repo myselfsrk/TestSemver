@@ -41,11 +41,5 @@ pipeline {
                 }
             }
         }
-
-        stage('Build & Deploy') {
-            steps {
-                // Your build and deploy steps.
-            }
-        }
     }
 }
