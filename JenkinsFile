@@ -11,20 +11,10 @@ pipeline {
     stages {
         stage('Build') {
             steps {
+                ${DB_ENGINE} = 'false'
                 echo "Database engine is ${DB_ENGINE}"
                 echo "DISABLE_AUTH is ${DISABLE_AUTH}"
                 sh 'printenv'
-            }
-        }
-    stage('Commit and Push to Git') {
-            steps {
-                script {
-                    sh 'git config user.name "myselfsrk"'
-                    sh 'git config user.email "sairamakrishna.srk96@gmail.com"'
-                    sh 'git add Version'
-                    sh "git commit -m \"Bumped version to ${DISABLE_AUTH}\""
-                    sh 'git push'
-                }
             }
         }
     }
