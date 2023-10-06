@@ -1,76 +1,19 @@
 pipeline {
-    agent any
-
-    parameters {
-        choice(name: 'BUMP_TYPE', choices: ['patch', 'major', 'minor'], description: 'Which version bump do you want to perform?')
+    agent {
+        label '!windows'
     }
+
     environment {
-        newVersion = '0.0.0'
+        DISABLE_AUTH = 'true'
+        DB_ENGINE    = 'sqlite'
     }
+
     stages {
-        stage('Major') {
-            when {
-                expression { params.BUMP_TYPE == 'major' }
-            }
+        stage('Build') {
             steps {
-                script {
-                    def currentVersion = readFile('Version').trim()
-                    def major = sh(script: "echo ${currentVersion} | cut -d. -f1", returnStdout: true).trim()
-                    major = "${major.toInteger() + 1}"
-                    env.newVersion = "${major}.0.0"
-                    writeFile(file: 'Version', text: ${env.newVersion})
-                    echo "Bumped patch version to ${env.newVersion}"
-
-                }
-            }
-        }
-
-        stage('Minor') {
-            when {
-                expression { params.BUMP_TYPE == 'minor' }
-            }
-            steps {
-                script {
-                    def currentVersion = readFile('Version').trim()
-                    def major = sh(script: "echo ${currentVersion} | cut -d. -f1", returnStdout: true).trim()
-                    def minor = sh(script: "echo ${currentVersion} | cut -d. -f2", returnStdout: true).trim()
-                    minor = "${minor.toInteger() + 1}"
-                    env.newVersion = "${major}.${minor}.0"
-                    writeFile(file: 'Version', text: ${env.newVersion})
-                    echo "Bumped patch version to ${env.newVersion}"
-
-                    // Save to script variable
-                    currentBuild.newVersion = newVersion
-                }
-            }
-        }
-
-        stage('Patch') {
-            when {
-                expression { params.BUMP_TYPE == 'patch' || !params.BUMP_TYPE }
-            }
-            steps {
-                script {
-                    def currentVersion = readFile('Version').trim()
-                    def major = sh(script: "echo ${currentVersion} | cut -d. -f1", returnStdout: true).trim()
-                    def minor = sh(script: "echo ${currentVersion} | cut -d. -f2", returnStdout: true).trim()
-                    def patch = sh(script: "echo ${currentVersion} | cut -d. -f3", returnStdout: true).trim()
-                    patch = "${patch.toInteger() + 1}"
-                    env.newVersion = "${major}.${minor}.${patch}"
-                    writeFile(file: 'Version', text: ${env.newVersion})
-                    echo "Bumped patch version to ${env.newVersion}"
-                }
-            }
-        }
-        stage('Commit and Push to Git') {
-            steps {
-                script {
-                    sh 'git config user.name "myselfsrk"'
-                    sh 'git config user.email "sairamakrishna.srk96@gmail.com"'
-                    sh 'git add Version'
-                    sh "git commit -m \"Bumped version to ${env.newVersion}\""
-                    sh 'git push'
-                }
+                echo "Database engine is ${DB_ENGINE}"
+                echo "DISABLE_AUTH is ${DISABLE_AUTH}"
+                sh 'printenv'
             }
         }
     }
