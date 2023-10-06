@@ -4,9 +4,6 @@ pipeline {
     parameters {
         choice(name: 'BUMP_TYPE', choices: ['patch', 'major', 'minor'], description: 'Which version bump do you want to perform?')
     }
-    environment {
-        newVersion = '1.0.0'  // Predefine the env variable here
-    }
     stages {
         stage('Major') {
             when {
@@ -15,11 +12,12 @@ pipeline {
             steps {
                 script {
                     def currentVersion = readFile('Version').trim()
+                    
                     def major = sh(script: "echo ${currentVersion} | cut -d. -f1", returnStdout: true).trim()
                     major = "${major.toInteger() + 1}"
-                    env.newVersion = "${major}.0.0"
-                    writeFile(file: 'Version', text: env.newVersion)
-                    echo "Bumped patch version to ${env.newVersion}"
+                    def newVersion = "${major}.0.0"
+                    writeFile(file: 'Version', text: newVersion)
+                    echo "Bumped patch version to ${newVersion}"
 
                 }
             }
@@ -35,9 +33,9 @@ pipeline {
                     def major = sh(script: "echo ${currentVersion} | cut -d. -f1", returnStdout: true).trim()
                     def minor = sh(script: "echo ${currentVersion} | cut -d. -f2", returnStdout: true).trim()
                     minor = "${minor.toInteger() + 1}"
-                    env.newVersion = "${major}.${minor}.0"
-                    writeFile(file: 'Version', text: env.newVersion)
-                    echo "Bumped patch version to ${env.newVersion}"
+                    def newVersion = "${major}.${minor}.0"
+                    writeFile(file: 'Version', text: newVersion)
+                    echo "Bumped patch version to ${newVersion}"
                 }
             }
         }
@@ -53,9 +51,9 @@ pipeline {
                     def minor = sh(script: "echo ${currentVersion} | cut -d. -f2", returnStdout: true).trim()
                     def patch = sh(script: "echo ${currentVersion} | cut -d. -f3", returnStdout: true).trim()
                     patch = "${patch.toInteger() + 1}"
-                    env.newVersion = "${major}.${minor}.${patch}"
-                    writeFile(file: 'Version', text: env.newVersion)
-                    echo "Bumped patch version to ${env.newVersion}"
+                    def newVersion = "${major}.${minor}.${patch}"
+                    writeFile(file: 'Version', text: newVersion)
+                    echo "Bumped patch version to ${newVersion}"
                 }
             }
         }
@@ -65,7 +63,7 @@ pipeline {
                     sh 'git config user.name "myselfsrk"'
                     sh 'git config user.email "sairamakrishna.srk96@gmail.com"'
                     sh 'git add Version'
-                    sh "git commit -m \"Bumped version to ${env.newVersion}\""
+                    sh "git commit -m \"Bumped version to ${newVersion}\""
                     sh 'git push'
                 }
             }
