@@ -1,10 +1,9 @@
+def newVersion = ''
+
 pipeline {
     agent any
     parameters {
         choice(name: 'BUMP_TYPE', choices: ['patch', 'major', 'minor'], description: 'Which version bump do you want to perform?')
-    }
-    script{
-        def newVersion = ''
     }
     stages {
         stage('Major') {
