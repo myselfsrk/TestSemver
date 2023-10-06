@@ -15,7 +15,7 @@ pipeline {
                     
                     def major = sh(script: "echo ${currentVersion} | cut -d. -f1", returnStdout: true).trim()
                     major = "${major.toInteger() + 1}"
-                    def newVersion = "${major}.0.0"
+                    newVersion = "${major}.0.0"
                     writeFile(file: 'Version', text: newVersion)
                     echo "Bumped patch version to ${newVersion}"
 
@@ -33,7 +33,7 @@ pipeline {
                     def major = sh(script: "echo ${currentVersion} | cut -d. -f1", returnStdout: true).trim()
                     def minor = sh(script: "echo ${currentVersion} | cut -d. -f2", returnStdout: true).trim()
                     minor = "${minor.toInteger() + 1}"
-                    def newVersion = "${major}.${minor}.0"
+                    newVersion = "${major}.${minor}.0"
                     writeFile(file: 'Version', text: newVersion)
                     echo "Bumped patch version to ${newVersion}"
                 }
@@ -51,7 +51,7 @@ pipeline {
                     def minor = sh(script: "echo ${currentVersion} | cut -d. -f2", returnStdout: true).trim()
                     def patch = sh(script: "echo ${currentVersion} | cut -d. -f3", returnStdout: true).trim()
                     patch = "${patch.toInteger() + 1}"
-                    def newVersion = "${major}.${minor}.${patch}"
+                    newVersion = "${major}.${minor}.${patch}"
                     writeFile(file: 'Version', text: newVersion)
                     echo "Bumped patch version to ${newVersion}"
                 }
