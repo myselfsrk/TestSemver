@@ -1,5 +1,3 @@
-def newVersion = ''
-
 pipeline {
     agent any
     parameters {
@@ -65,7 +63,7 @@ pipeline {
                     sh 'git config user.email "sairamakrishna.srk96@gmail.com"'
                     sh 'git add Version'
                     sh "git commit -m \"Bumped version to ${newVersion}\""
-                    sh 'git push'
+                    sh 'git push origin head'
                 }
             }
         }
