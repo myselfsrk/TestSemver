@@ -3,7 +3,9 @@ pipeline {
     parameters {
         choice(name: 'BUMP_TYPE', choices: ['patch', 'major', 'minor'], description: 'Which version bump do you want to perform?')
     }
-    def newVersion = ''
+    script{
+        def newVersion = ''
+    }
     stages {
         stage('Major') {
             when {
